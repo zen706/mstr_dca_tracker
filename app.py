@@ -14,8 +14,18 @@ def index():
     # 初期値
     investment_value = request.args.get("investment", "10")
     timeframe_value = request.args.get("timeframe", "week")
-    accumulate_years_value = request.args.get("accumulate_years", "5")
+    accumulate_years_value = request.args.get("accumulate_period", "5")
     include_btc = request.args.get("include_btc", "off")  # "on"ならチェック済み
+
+    # ここで start_date_select を取得
+    start_date_select = request.args.get("start_date_select")
+    # custom_dateの値を取得
+    custom_date = request.args.get("start_date_custom", "")
+    # custom_date_divの表示状態を決定
+    if start_date_select == "custom":
+        custom_date_div_style = "display: block;"
+    else:
+        custom_date_div_style = "display: none;"
 
     # 開始日セレクトボックス用のオプションを作成（半年前、1年前～10年前）
     today = datetime.today()
@@ -31,25 +41,27 @@ def index():
     # 選択肢HTMLの生成（日付の部分は表示しない）
     options_html = ""
     for value, date_str, label in options:
-        options_html += f'<option value="{date_str}">{label}</option>'
+        selected = " selected" if start_date_select == date_str else ""
+        options_html += f'<option value="{date_str}"{selected}>{label}</option>'
     # 最後に任意日付選択用のオプション
-    options_html += '<option value="custom">Custom Date</option>'
+    custom_selected = " selected" if start_date_select == "custom" else ""
+    options_html += f'<option value="custom"{custom_selected}>Custom Date</option>'
 
     # フォームのHTML（「Start Date:」ラベルを表示）
     # フォーム HTML 部分の更新例
     # フォーム HTML 部分の更新例（一部抜粋）
     form_html = f"""
-    <form action="/" method="get">
+    <form id="dca-form" action="/" method="get" autocomplete="off">
       <div class="mb-3">
         <label class="form-label">Investment Amount</label>
         <div class="input-group">
           <span class="input-group-text">$</span>
-          <input type="number" name="investment" value="{investment_value}" class="form-control" step="1" min="1">
+          <input type="number" name="investment" value="{investment_value}" class="form-control" step="1" min="1" oninput="autoSubmit()">
         </div>
       </div>
       <div class="mb-3">
         <label class="form-label">Timeframe</label>
-        <select name="timeframe" class="form-select">
+        <select name="timeframe" class="form-select" onchange="autoSubmit()">
           <option value="day" {"selected" if timeframe_value=="day" else ""}>day</option>
           <option value="week" {"selected" if timeframe_value=="week" else ""}>week</option>
           <option value="month" {"selected" if timeframe_value=="month" else ""}>month</option>
@@ -58,18 +70,18 @@ def index():
       </div>
       <div class="mb-3">
         <label class="form-label">Start Date</label>
-        <select name="start_date_select" id="start_date_select" class="form-select">
+        <select name="start_date_select" id="start_date_select" class="form-select" onchange="autoSubmit()">
           {options_html}
         </select>
       </div>
-      <div id="custom_date_div" class="mb-3" style="display: none;">
+      <div id="custom_date_div" class="mb-3" style="{custom_date_div_style}">
         <label class="form-label">Custom Date (YYYY-MM-DD)</label>
-        <input type="text" name="start_date_custom" placeholder="YYYY-MM-DD" class="form-control">
+        <input type="text" name="start_date_custom" placeholder="YYYY-MM-DD" class="form-control" value="{custom_date}" oninput="autoSubmit()">
       </div>
       <div class="mb-3">
         <label class="form-label">Accumulate For</label>
-        <select name="accumulate_years" class="form-select">
-          <option value="0.5" {"selected" if accumulate_years_value=="0.5" else ""}>6 month</option>
+        <select name="accumulate_period" class="form-select" onchange="autoSubmit()">
+          <option value="0.5" {"selected" if accumulate_years_value=="0.5" else ""}>6 months</option>
           <option value="1" {"selected" if accumulate_years_value=="1" else ""}>1 year</option>
           <option value="2" {"selected" if accumulate_years_value=="2" else ""}>2 years</option>
           <option value="3" {"selected" if accumulate_years_value=="3" else ""}>3 years</option>
@@ -83,12 +95,15 @@ def index():
         </select>
       </div>
       <div class="mb-3 form-check">
-        <input type="checkbox" name="include_btc" class="form-check-input" {"checked" if include_btc=="on" else ""}>
+        <input type="checkbox" name="include_btc" class="form-check-input" {"checked" if include_btc=="on" else ""} onchange="autoSubmit()">
         <label class="form-check-label">Include Bitcoin</label>
       </div>
-      <input type="submit" value="Calculate" class="btn btn-primary">
     </form>
     <script>
+      // 入力値が変わったら自動送信
+      function autoSubmit() {{
+        document.getElementById('dca-form').submit();
+      }}
       // 選択値が「custom」のときだけ、カスタム入力欄を表示する
       document.getElementById('start_date_select').addEventListener('change', function() {{
           var customDiv = document.getElementById('custom_date_div');
@@ -100,7 +115,6 @@ def index():
       }});
     </script>
     """
-
     # サーバ側でstart_dateを決定
     start_date_select = request.args.get("start_date_select")
     if start_date_select == "custom":
@@ -116,9 +130,13 @@ def index():
         try:
             investment = float(investment_value)
             timeframe = timeframe_value.lower()
-            accumulate_years = (
-                int(accumulate_years_value) if accumulate_years_value else None
-            )
+            # accumulate_years_value を float に変換
+            acc_val = float(accumulate_years_value) if accumulate_years_value else 0
+            if acc_val < 1:
+                # 例: "0.5" → 6 months
+                accumulate_period = int(acc_val * 12)
+            else:
+                accumulate_period = int(acc_val)
 
             # ① MSTR のデータ取得と DCA 計算
             historical_data_mstr = load_data("MSTR")
@@ -127,7 +145,7 @@ def index():
                 timeframe,
                 historical_data_mstr,
                 start_date,
-                accumulate_years,
+                accumulate_period,
             )
             returns_mstr = dca_calculator_mstr.calculate_returns()
             dates_mstr = [data["date"] for data in returns_mstr]
@@ -174,7 +192,7 @@ def index():
                     timeframe,
                     load_data("BTC-USD"),
                     start_date,
-                    accumulate_years,
+                    accumulate_period,
                 )
                 returns_btc = dca_calculator_btc.calculate_returns()
                 dates_btc = [data["date"] for data in returns_btc]
