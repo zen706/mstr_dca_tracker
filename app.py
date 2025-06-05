@@ -14,16 +14,16 @@ app = Flask(__name__)
 def graph():
     investment_value = request.args.get("investment", "10")
     timeframe_value = request.args.get("timeframe", "week")
-    accumulate_years_value = request.args.get("accumulate_period", "5")
+    accumulate_years_value = request.args.get("accumulate_period", "4")
     include_btc = request.args.get("include_btc", "off")
     start_date_select = request.args.get("start_date_select")
     custom_date = request.args.get("start_date_custom", "")
     if start_date_select == "custom":
-        start_date = custom_date or "2015-01-01"
+        start_date = custom_date or "2020-08-01"
     elif start_date_select:
         start_date = start_date_select
     else:
-        start_date = "2015-01-01"
+        start_date = "2020-08-01"
 
     try:
         investment = float(investment_value)
@@ -52,13 +52,6 @@ def graph():
         percent_change = (
             (total_value / total_invested * 100) if total_invested > 0 else 0
         )
-
-        btc_df = load_data("BTC-USD")
-        current_btc_usd = btc_df["Close"].iloc[-1]
-        mstr_df = load_data("MSTR")
-        current_mstr_price = mstr_df["Close"].iloc[-1]
-        sat_value_calculated = math.floor((total_value / current_btc_usd) * 10**8)
-        mstr_shares_calculated = math.floor(total_value / current_mstr_price)
 
         fig = go.Figure()
         fig.add_trace(
@@ -100,63 +93,94 @@ def graph():
                 if total_invested_btc > 0
                 else 0
             )
+
+            btc_df = load_data("BTC-USD")
+            current_btc_usd = btc_df["Close"].iloc[-1]
+            sat_value_calculated = math.floor(
+                (total_value_btc / current_btc_usd) * 10**8
+            )
+
             summary_stats_btc = f"""
-      <div class="row justify-content-center mt-4">
-        <div class="col-12 col-md-4">
-          <div class="card shadow-sm">
-            <div class="card-body text-center">
-              <h2>${total_invested_btc:.2f}</h2>
-              <p>Total Invested (BTC)</p>
-            </div>
+  <div class="row justify-content-center mt-4">
+    <div class="col-12 col-md-4">
+      <div class="card shadow-sm">
+        <div class="card-body d-flex align-items-center justify-content-between">
+          <div>
+            <h2 style="margin-bottom:0;">${total_invested_btc:.2f}</h2>
+            <p class="mb-0">Total Invested</p>
           </div>
-        </div>
-        <div class="col-12 col-md-4 mt-3 mt-md-0">
-          <div class="card shadow-sm">
-            <div class="card-body text-center">
-              <h2>${total_value_btc:.2f}</h2>
-              <p>Total Value (BTC)</p>
-            </div>
-          </div>
-        </div>
-        <div class="col-12 col-md-4 mt-3 mt-md-0">
-          <div class="card shadow-sm">
-            <div class="card-body text-center">
-              <h2>{percent_change_btc:.2f}%</h2>
-              <p>Percent Change (BTC)</p>
-            </div>
-          </div>
+          <img src="https://upload.wikimedia.org/wikipedia/commons/4/46/Bitcoin.svg" alt="BTC" style="height:2.2em;width:auto;margin-left:1em; margin-right:0.2em;">
         </div>
       </div>
-            """
+    </div>
+    <div class="col-12 col-md-4 mt-3 mt-md-0">
+      <div class="card shadow-sm">
+        <div class="card-body d-flex align-items-center justify-content-between">
+          <div>
+            <h2 style="margin-bottom:0;">${total_value_btc:.2f}</h2>
+            <p class="mb-0">{sat_value_calculated:,} Satoshis</p>
+            <p class="mb-0">Total Value</p>
+          </div>
+          <img src="https://upload.wikimedia.org/wikipedia/commons/4/46/Bitcoin.svg" alt="BTC" style="height:2.2em;width:auto;margin-left:1em; margin-right:0.2em;">
+        </div>
+      </div>
+    </div>
+    <div class="col-12 col-md-4 mt-3 mt-md-0">
+      <div class="card shadow-sm">
+        <div class="card-body d-flex align-items-center justify-content-between">
+          <div>
+            <h2 style="margin-bottom:0;">{percent_change_btc:.2f}%</h2>
+            <p class="mb-0">Percent Change</p>
+          </div>
+          <img src="https://upload.wikimedia.org/wikipedia/commons/4/46/Bitcoin.svg" alt="BTC" style="height:2.2em;width:auto;margin-left:1em; margin-right:0.2em;">
+        </div>
+      </div>
+    </div>
+  </div>
+"""
         summary_stats = f"""
-      <div class="row justify-content-center mt-4">
-        <div class="col-12 col-md-4">
-          <div class="card shadow-sm">
-            <div class="card-body text-center">
-              <h2>${total_invested:.2f}</h2>
-              <p>Total Invested (MSTR)</p>
-            </div>
+  <div class="row justify-content-center mt-4">
+    <div class="col-12 col-md-4">
+      <div class="card shadow-sm">
+        <div class="card-body d-flex align-items-center justify-content-between">
+          <div>
+            <h2 style="margin-bottom:0;">${total_invested:.2f}</h2>
+            <p class="mb-0">Total Invested</p>
           </div>
-        </div>
-        <div class="col-12 col-md-4 mt-3 mt-md-0">
-          <div class="card shadow-sm">
-            <div class="card-body text-center">
-              <h2>${total_value:.2f}</h2>
-              <p>{sat_value_calculated:,} Satoshis, {mstr_shares_calculated} MSTR</p>
-              <p>Total Value (MSTR)</p>
-            </div>
-          </div>
-        </div>
-        <div class="col-12 col-md-4 mt-3 mt-md-0">
-          <div class="card shadow-sm">
-            <div class="card-body text-center">
-              <h2>{percent_change:.2f}%</h2>
-              <p>Percent Change (MSTR)</p>
-            </div>
-          </div>
+          <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3e/Strategy_logo_%282025%29.svg/2880px-Strategy_logo_%282025%29.svg.png"
+               alt="Strategy"
+               style="max-width:4em; width:100%; height:auto; margin-left:1em; margin-right:0.2em; object-fit:contain;">
         </div>
       </div>
-      """
+    </div>
+    <div class="col-12 col-md-4 mt-3 mt-md-0">
+      <div class="card shadow-sm">
+        <div class="card-body d-flex align-items-center justify-content-between">
+          <div>
+            <h2 style="margin-bottom:0;">${total_value:.2f}</h2>
+            <p class="mb-0">Total Value</p>
+          </div>
+          <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3e/Strategy_logo_%282025%29.svg/2880px-Strategy_logo_%282025%29.svg.png"
+               alt="Strategy"
+               style="max-width:4em; width:100%; height:auto; margin-left:1em; margin-right:0.2em; object-fit:contain;">
+        </div>
+      </div>
+    </div>
+    <div class="col-12 col-md-4 mt-3 mt-md-0">
+      <div class="card shadow-sm">
+        <div class="card-body d-flex align-items-center justify-content-between">
+          <div style="white-space:nowrap;">
+            <h2 style="margin-bottom:0;">{percent_change:.2f}%</h2>
+            <p class="mb-0">Percent Change</p>
+          </div>
+          <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3e/Strategy_logo_%282025%29.svg/2880px-Strategy_logo_%282025%29.svg.png"
+               alt="Strategy"
+               style="max-width:4em; width:100%; height:auto; margin-left:1em; margin-right:0.2em; object-fit:contain;">
+        </div>
+      </div>
+    </div>
+  </div>
+"""
         if include_btc == "on":
             summary_stats = summary_stats + summary_stats_btc
 
@@ -182,7 +206,7 @@ def graph():
 def index():
     investment_value = request.args.get("investment", "10")
     timeframe_value = request.args.get("timeframe", "week")
-    accumulate_years_value = request.args.get("accumulate_period", "5")
+    accumulate_years_value = request.args.get("accumulate_period", "4")
     include_btc = request.args.get("include_btc", "off")
     start_date_select = request.args.get("start_date_select")
     custom_date = request.args.get("start_date_custom", "")
@@ -286,6 +310,34 @@ def index():
       .summary-container {{
         width: 100%;
         margin-bottom: 20px;
+      }}
+      /* サマリーboxの高さを統一 */
+      .summary-container .card {{
+        height: 100%;
+        min-height: 100px; /* 140px→100pxに調整 */
+        margin-top: 10px;  /* 余白を減らす */
+        margin-bottom: 10px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+      }}
+      .summary-container .card-body {{
+        height: 100%;
+        padding-top: 10px;    /* 余白を減らす */
+        padding-bottom: 10px; /* 余白を減らす */
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }}
+      .summary-container .card-body h2 {{
+        font-size: 1.5rem;
+        margin-bottom: 0;
+      }}
+      .summary-container .card-body p {{
+        font-size: 0.85rem;
+        margin-bottom: 0;
+        color: #444; /* 文字色を薄く */
+        font-weight: 400;
       }}
       .form-graph-row {{
         display: flex;
