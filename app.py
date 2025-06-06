@@ -104,35 +104,41 @@ def graph():
   <div class="row justify-content-center mt-4">
     <div class="col-12 col-md-4">
       <div class="card shadow-sm">
-        <div class="card-body d-flex align-items-center justify-content-between">
+        <div class="card-body d-flex align-items-center justify-content-between" style="position:relative;">
           <div>
-            <h2 style="margin-bottom:0;">${total_invested_btc:.2f}</h2>
+            <h2 style="margin-bottom:0; white-space:nowrap; position:relative; z-index:2;">${total_invested_btc:.2f}</h2>
             <p class="mb-0">Total Invested</p>
           </div>
-          <img src="https://upload.wikimedia.org/wikipedia/commons/4/46/Bitcoin.svg" alt="BTC" style="height:2.2em;width:auto;margin-left:1em; margin-right:0.2em;">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/4/46/Bitcoin.svg"
+               alt="BTC"
+               style="height:2.2em;width:auto;margin-left:1em; margin-right:0.2em; position:absolute; right:1em; top:50%; transform:translateY(-50%); z-index:1; pointer-events:none;">
         </div>
       </div>
     </div>
     <div class="col-12 col-md-4 mt-3 mt-md-0">
       <div class="card shadow-sm">
-        <div class="card-body d-flex align-items-center justify-content-between">
+        <div class="card-body d-flex align-items-center justify-content-between" style="position:relative;">
           <div>
-            <h2 style="margin-bottom:0;">${total_value_btc:.2f}</h2>
-            <p class="mb-0">{sat_value_calculated:,} Satoshis</p>
+            <h2 style="margin-bottom:0; white-space:nowrap; position:relative; z-index:2;">${total_value_btc:.2f}</h2>
+            <p class="mb-0" style="white-space:nowrap; position:relative; z-index:2;">{sat_value_calculated:,} Satoshis</p>
             <p class="mb-0">Total Value</p>
           </div>
-          <img src="https://upload.wikimedia.org/wikipedia/commons/4/46/Bitcoin.svg" alt="BTC" style="height:2.2em;width:auto;margin-left:1em; margin-right:0.2em;">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/4/46/Bitcoin.svg"
+               alt="BTC"
+               style="height:2.2em;width:auto;margin-left:1em; margin-right:0.2em; position:absolute; right:1em; top:50%; transform:translateY(-50%); z-index:1; pointer-events:none;">
         </div>
       </div>
     </div>
     <div class="col-12 col-md-4 mt-3 mt-md-0">
       <div class="card shadow-sm">
-        <div class="card-body d-flex align-items-center justify-content-between">
+        <div class="card-body d-flex align-items-center justify-content-between" style="position:relative;">
           <div>
-            <h2 style="margin-bottom:0;">{percent_change_btc:.2f}%</h2>
+            <h2 style="margin-bottom:0; white-space:nowrap; position:relative; z-index:2;">{percent_change_btc:.2f}%</h2>
             <p class="mb-0">Percent Change</p>
           </div>
-          <img src="https://upload.wikimedia.org/wikipedia/commons/4/46/Bitcoin.svg" alt="BTC" style="height:2.2em;width:auto;margin-left:1em; margin-right:0.2em;">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/4/46/Bitcoin.svg"
+               alt="BTC"
+               style="height:2.2em;width:auto;margin-left:1em; margin-right:0.2em; position:absolute; right:1em; top:50%; transform:translateY(-50%); z-index:1; pointer-events:none;">
         </div>
       </div>
     </div>
@@ -142,40 +148,40 @@ def graph():
   <div class="row justify-content-center mt-4">
     <div class="col-12 col-md-4">
       <div class="card shadow-sm">
-        <div class="card-body d-flex align-items-center justify-content-between">
+        <div class="card-body d-flex align-items-center justify-content-between" style="position:relative;">
           <div>
-            <h2 style="margin-bottom:0;">${total_invested:.2f}</h2>
+            <h2 style="margin-bottom:0; white-space:nowrap; position:relative; z-index:2;">${total_invested:.2f}</h2>
             <p class="mb-0">Total Invested</p>
           </div>
           <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3e/Strategy_logo_%282025%29.svg/2880px-Strategy_logo_%282025%29.svg.png"
                alt="Strategy"
-               style="max-width:4em; width:100%; height:auto; margin-left:1em; margin-right:0.2em; object-fit:contain;">
+               style="max-width:5em; width:5em; height:auto; margin-left:1em; margin-right:0.2em; object-fit:contain; position:absolute; right:1em; top:50%; transform:translateY(-50%); z-index:1; pointer-events:none;">
         </div>
       </div>
     </div>
     <div class="col-12 col-md-4 mt-3 mt-md-0">
       <div class="card shadow-sm">
-        <div class="card-body d-flex align-items-center justify-content-between">
+        <div class="card-body d-flex align-items-center justify-content-between" style="position:relative;">
           <div>
-            <h2 style="margin-bottom:0;">${total_value:.2f}</h2>
+            <h2 style="margin-bottom:0; white-space:nowrap; position:relative; z-index:2;">${total_value:.2f}</h2>
             <p class="mb-0">Total Value</p>
           </div>
           <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3e/Strategy_logo_%282025%29.svg/2880px-Strategy_logo_%282025%29.svg.png"
                alt="Strategy"
-               style="max-width:4em; width:100%; height:auto; margin-left:1em; margin-right:0.2em; object-fit:contain;">
+               style="max-width:5em; width:5em; height:auto; margin-left:1em; margin-right:0.2em; object-fit:contain; position:absolute; right:1em; top:50%; transform:translateY(-50%); z-index:1; pointer-events:none;">
         </div>
       </div>
     </div>
     <div class="col-12 col-md-4 mt-3 mt-md-0">
       <div class="card shadow-sm">
-        <div class="card-body d-flex align-items-center justify-content-between">
-          <div style="white-space:nowrap;">
-            <h2 style="margin-bottom:0;">{percent_change:.2f}%</h2>
+        <div class="card-body d-flex align-items-center justify-content-between" style="position:relative;">
+          <div>
+            <h2 style="margin-bottom:0; white-space:nowrap; position:relative; z-index:2;">{percent_change:.2f}%</h2>
             <p class="mb-0">Percent Change</p>
           </div>
           <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3e/Strategy_logo_%282025%29.svg/2880px-Strategy_logo_%282025%29.svg.png"
                alt="Strategy"
-               style="max-width:4em; width:100%; height:auto; margin-left:1em; margin-right:0.2em; object-fit:contain;">
+               style="max-width:5em; width:5em; height:auto; margin-left:1em; margin-right:0.2em; object-fit:contain; position:absolute; right:1em; top:50%; transform:translateY(-50%); z-index:1; pointer-events:none;">
         </div>
       </div>
     </div>
@@ -233,19 +239,19 @@ def index():
     form_html = f"""
     <form id="dca-form" autocomplete="off">
       <div class="mb-3">
-        <label class="form-label">Investment Amount</label>
+        <label class="form-label">Purchase Amount</label>
         <div class="input-group">
           <span class="input-group-text">$</span>
           <input type="number" name="investment" value="{investment_value}" class="form-control" step="1" min="1">
         </div>
       </div>
       <div class="mb-3">
-        <label class="form-label">Timeframe</label>
+        <label class="form-label">Repeat Purchase</label>
         <select name="timeframe" class="form-select">
-          <option value="day" {"selected" if timeframe_value=="day" else ""}>day</option>
-          <option value="week" {"selected" if timeframe_value=="week" else ""}>week</option>
-          <option value="month" {"selected" if timeframe_value=="month" else ""}>month</option>
-          <option value="year" {"selected" if timeframe_value=="year" else ""}>year</option>
+          <option value="day" {"selected" if timeframe_value=="day" else ""}>Dayly</option>
+          <option value="week" {"selected" if timeframe_value=="week" else ""}>Weekly</option>
+          <option value="month" {"selected" if timeframe_value=="month" else ""}>Monthly</option>
+          <option value="year" {"selected" if timeframe_value=="year" else ""}>Yearly</option>
         </select>
       </div>
       <div class="mb-3">
