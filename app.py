@@ -50,7 +50,7 @@ def graph():
         total_invested = cumulative_investment_mstr
         total_value = values_mstr[-1] if values_mstr else 0
         percent_change = (
-            (total_value / total_invested * 100) if total_invested > 0 else 0
+            (total_value / total_invested - 1) * 100 if total_invested > 0 else 0
         )
 
         fig = go.Figure()
@@ -89,7 +89,7 @@ def graph():
             total_invested_btc = cumulative_investment_btc
             total_value_btc = values_btc[-1] if values_btc else 0
             percent_change_btc = (
-                (total_value_btc / total_invested_btc * 100)
+                (total_value_btc / total_invested_btc - 1) * 100
                 if total_invested_btc > 0
                 else 0
             )
@@ -262,7 +262,15 @@ def index():
       </div>
       <div id="custom_date_div" class="mb-3" style="{custom_date_div_style}">
         <label class="form-label">Custom Date (YYYY-MM-DD)</label>
-        <input type="text" name="start_date_custom" placeholder="YYYY-MM-DD" class="form-control" value="{custom_date}">
+        <input type="text" name="start_date_custom" placeholder="YYYY-MM-DD" class="form-control"
+    value="{custom_date if '-' in custom_date else (custom_date[:4] + '-' + custom_date[4:6] + '-' + custom_date[6:8]) if len(custom_date)==8 else ''}"
+    maxlength="10"
+    oninput="
+      this.value = this.value.replace(/[^0-9]/g,'');
+      if(this.value.length > 4) this.value = this.value.slice(0,4) + '-' + this.value.slice(4);
+      if(this.value.length > 7) this.value = this.value.slice(0,7) + '-' + this.value.slice(7,10);
+    "
+  >
       </div>
       <div class="mb-3">
         <label class="form-label">Accumulate For</label>
